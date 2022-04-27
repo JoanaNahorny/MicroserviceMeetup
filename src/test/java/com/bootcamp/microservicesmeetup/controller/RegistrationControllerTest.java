@@ -1,6 +1,7 @@
 package com.bootcamp.microservicesmeetup.controller;
 
 import com.bootcamp.microservicesmeetup.controller.dto.RegistrationDTO;
+import com.bootcamp.microservicesmeetup.controller.resource.RegistrationController;
 import com.bootcamp.microservicesmeetup.model.etity.Registration;
 import com.bootcamp.microservicesmeetup.service.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
