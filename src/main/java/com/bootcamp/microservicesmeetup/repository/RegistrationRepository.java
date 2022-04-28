@@ -1,6 +1,6 @@
 package com.bootcamp.microservicesmeetup.repository;
 
-import com.bootcamp.microservicesmeetup.model.etity.Registration;
+import com.bootcamp.microservicesmeetup.model.entity.Registration;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

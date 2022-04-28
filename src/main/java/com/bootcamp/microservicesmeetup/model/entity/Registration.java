@@ -1,4 +1,4 @@
-package com.bootcamp.microservicesmeetup.model.etity;
+package com.bootcamp.microservicesmeetup.model.entity;
 
 
 import lombok.AllArgsConstructor;

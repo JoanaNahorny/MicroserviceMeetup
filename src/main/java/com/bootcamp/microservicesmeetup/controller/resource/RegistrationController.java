@@ -1,11 +1,12 @@
 package com.bootcamp.microservicesmeetup.controller.resource;
 
 import com.bootcamp.microservicesmeetup.controller.dto.RegistrationDTO;
-import com.bootcamp.microservicesmeetup.model.etity.Registration;
+import com.bootcamp.microservicesmeetup.model.entity.Registration;
 import com.bootcamp.microservicesmeetup.service.RegistrationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
@@ -31,5 +32,16 @@ public class RegistrationController {
 
         return modelMapper.map(entity, RegistrationDTO.class);
     }
+
+    @GetMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public RegistrationDTO get (@PathVariable Integer id) {
+
+        return registrationService
+                .getRegistrationById(id)
+                .map(registration -> modelMapper.map(registration, RegistrationDTO.class))
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
 
 }

@@ -2,7 +2,8 @@ package com.bootcamp.microservicesmeetup.controller;
 
 import com.bootcamp.microservicesmeetup.controller.dto.RegistrationDTO;
 import com.bootcamp.microservicesmeetup.controller.resource.RegistrationController;
-import com.bootcamp.microservicesmeetup.model.etity.Registration;
+import com.bootcamp.microservicesmeetup.exception.BusinessException;
+import com.bootcamp.microservicesmeetup.model.entity.Registration;
 import com.bootcamp.microservicesmeetup.service.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -62,6 +66,71 @@ public class RegistrationControllerTest {
                 .andExpect(jsonPath("name").value(registrationDTOBuilder.getName()))
                 .andExpect(jsonPath("dateOfRegistration").value(registrationDTOBuilder.getDateOfRegistration()))
                 .andExpect(jsonPath("registration").value(registrationDTOBuilder.getRegistration()));
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when not have date enough for the test")
+    public void createInvalidRegistrationTest() throws Exception{
+        String json = new ObjectMapper().writeValueAsString(new RegistrationDTO());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(REGISTRATION_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when try to create a new registration with an registration already created.")
+    public void createRegistrationWithDuplicatedRegistration() throws Exception {
+
+        RegistrationDTO dto = createNewRegistration();
+        String json  = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given(registrationService.save(any(Registration.class)))
+                .willThrow(new BusinessException("Registration already created!"));
+
+        MockHttpServletRequestBuilder request  = MockMvcRequestBuilders
+                .post(REGISTRATION_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        // questão com o import "import static org.hamcrest.Matchers.hasSize;" que deveria ser sem o hasSize
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("Registration already created!"));
+    }
+
+    @Test
+    @DisplayName("Should get registration information")
+    public void getRegistrationTest() throws Exception {
+        Integer id = 101;
+
+        Registration registration = Registration.builder()
+                .id(id)
+                .name(createNewRegistration().getName())
+                .dateOfRegistration(createNewRegistration().getDateOfRegistration())
+                .registration(createNewRegistration().getRegistration())
+                .build();
+
+        BDDMockito.given(registrationService.getRegistrationById(id)).willReturn(Optional.of(registration));
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(REGISTRATION_API.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(101))
+                .andExpect(jsonPath("name").value(createNewRegistration().getName()))
+                .andExpect(jsonPath("dateOfRegistration").value(createNewRegistration().getDateOfRegistration()))
+                .andExpect(jsonPath("registration").value(createNewRegistration().getRegistration()));
     }
 
     private RegistrationDTO createNewRegistration() {

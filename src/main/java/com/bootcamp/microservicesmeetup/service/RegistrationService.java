@@ -1,6 +1,6 @@
 package com.bootcamp.microservicesmeetup.service;
 
-import com.bootcamp.microservicesmeetup.model.etity.Registration;
+import com.bootcamp.microservicesmeetup.model.entity.Registration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

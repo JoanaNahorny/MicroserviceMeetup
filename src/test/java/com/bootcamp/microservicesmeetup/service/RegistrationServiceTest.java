@@ -1,7 +1,7 @@
 package com.bootcamp.microservicesmeetup.service;
 
 import com.bootcamp.microservicesmeetup.exception.BusinessException;
-import com.bootcamp.microservicesmeetup.model.etity.Registration;
+import com.bootcamp.microservicesmeetup.model.entity.Registration;
 import com.bootcamp.microservicesmeetup.repository.RegistrationRepository;
 import com.bootcamp.microservicesmeetup.service.impl.RegistrationServiceImpl;
 import org.assertj.core.api.Assertions;
