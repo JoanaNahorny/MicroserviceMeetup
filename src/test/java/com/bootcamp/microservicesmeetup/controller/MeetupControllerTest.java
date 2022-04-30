@@ -1,8 +1,8 @@
 package com.bootcamp.microservicesmeetup.controller;
 
-
 import com.bootcamp.microservicesmeetup.controller.dto.MeetupDTO;
 import com.bootcamp.microservicesmeetup.controller.resource.MeetupController;
+import com.bootcamp.microservicesmeetup.exception.BusinessException;
 import com.bootcamp.microservicesmeetup.model.entity.Meetup;
 import com.bootcamp.microservicesmeetup.model.entity.Registration;
 import com.bootcamp.microservicesmeetup.service.MeetupService;
@@ -25,7 +25,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -71,7 +70,51 @@ public class MeetupControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isCreated())
                 .andExpect(content().string("11"));
-
     }
+
+    @Test
+    @DisplayName("Should return error when try to register an a meetup nonexistent")
+    public void invalidRegistrationCreateMeetupTest() throws Exception {
+
+        MeetupDTO dto = MeetupDTO.builder().registrationAttribute("123").event("Womakerscode Dados").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given(registrationService.getRegistrationByRegistrationAttribute("123")).
+                willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(MEETUP_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should return error when try to register a registration already register on a meetup")
+    public void  meetupRegistrationErrorOnCreateMeetupTest() throws Exception {
+
+        MeetupDTO dto = MeetupDTO.builder().registrationAttribute("123").event("Womakerscode Dados").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        Registration registration = Registration.builder().id(11).name("Ana Neri").registration("123").build();
+        BDDMockito.given(registrationService.getRegistrationByRegistrationAttribute("123"))
+                .willReturn(Optional.of(registration));
+
+        // procura na base se ja tem algum registration pra esse meetup
+        BDDMockito.given(meetupService.save(Mockito.any(Meetup.class))).willThrow(new BusinessException("Meetup already enrolled"));
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(MEETUP_API)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest());
+    }
+
+    // mais 2 testes de suceeso
+    // mais 2 testes de erro
 
 }
