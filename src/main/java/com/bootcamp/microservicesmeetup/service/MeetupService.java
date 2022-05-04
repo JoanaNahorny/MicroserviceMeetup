@@ -14,6 +14,8 @@ public interface MeetupService {
 
     Optional<Meetup> getById(Integer id);
 
+    void delete(Meetup meetup);
+
     Meetup update(Meetup loan);
 
     Page<Meetup> find(MeetupFilterDTO filterDTO, Pageable pageable);

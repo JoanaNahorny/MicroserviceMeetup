@@ -36,7 +36,6 @@ public class RegistrationRepositoryTest {
         boolean exists = repository.existsByRegistration(registration);
 
         assertThat(exists).isTrue();
-
     }
 
     @Test
@@ -48,7 +47,6 @@ public class RegistrationRepositoryTest {
         boolean exists = repository.existsByRegistration(registration);
 
         assertThat(exists).isFalse();
-
     }
 
     @Test
@@ -62,7 +60,6 @@ public class RegistrationRepositoryTest {
                 .findById(registration_attribute.getId());
 
         assertThat(foundRegistration.isPresent()).isTrue();
-
     }
 
     @Test
@@ -74,7 +71,6 @@ public class RegistrationRepositoryTest {
         Registration savedRegistration = repository.save(registration_attribute);
 
         assertThat(savedRegistration.getId()).isNotNull();
-
     }
 
     @Test
@@ -94,18 +90,6 @@ public class RegistrationRepositoryTest {
         assertThat(deleteRegistration).isNull();
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
         private Registration createNewRegistration(String registration) {
         return Registration.builder()

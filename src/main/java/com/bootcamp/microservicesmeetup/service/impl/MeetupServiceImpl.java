@@ -22,17 +22,28 @@ public class MeetupServiceImpl implements MeetupService {
 
     @Override
     public Meetup save(Meetup meetup) {
-        return null;
+        return repository.save(meetup);
     }
 
     @Override
     public Optional<Meetup> getById(Integer id) {
-        return Optional.empty();
+        return repository.findById(id);
+    }
+
+    @Override
+    public void delete(Meetup meetup) {
+        if (meetup == null || meetup.getId() == null) {
+            throw new IllegalArgumentException("Meetup id cannot be null");
+        }
+        this.repository.delete(meetup);
     }
 
     @Override
     public Meetup update(Meetup loan) {
-        return null;
+        if (loan == null || loan.getId() == null) {
+            throw new IllegalArgumentException("Meetup id cannot be null");
+        }
+        return this.repository.save(loan);
     }
 
     @Override

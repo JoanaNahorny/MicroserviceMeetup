@@ -98,7 +98,6 @@ public class RegistrationServiceTest {
         assertThat(foundRegistration.get().getName()).isEqualTo(registration.getName());
         assertThat(foundRegistration.get().getDateOfRegistration()).isEqualTo(registration.getDateOfRegistration());
         assertThat(foundRegistration.get().getRegistration()).isEqualTo(registration.getRegistration());
-
     }
 
     @Test
@@ -110,7 +109,6 @@ public class RegistrationServiceTest {
         Optional<Registration> registration = registrationService.getRegistrationById(id);
 
         assertThat(registration.isPresent()).isFalse();
-
     }
 
     @Test
@@ -145,7 +143,6 @@ public class RegistrationServiceTest {
         assertThat(registration.getName()).isEqualTo(updatedRegistration.getName());
         assertThat(registration.getDateOfRegistration()).isEqualTo(updatedRegistration.getDateOfRegistration());
         assertThat(registration.getRegistration()).isEqualTo(updatedRegistration.getRegistration());
-
     }
 
     @Test

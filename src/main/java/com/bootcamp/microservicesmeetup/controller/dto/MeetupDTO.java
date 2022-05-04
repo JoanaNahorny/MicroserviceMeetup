@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -13,8 +15,10 @@ public class MeetupDTO {
 
     private Integer id;
 
+    @NotEmpty
     private String registrationAttribute;
 
+    @NotEmpty
     private String event;
 
     private RegistrationDTO registration;

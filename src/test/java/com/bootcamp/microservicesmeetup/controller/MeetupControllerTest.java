@@ -1,6 +1,7 @@
 package com.bootcamp.microservicesmeetup.controller;
 
 import com.bootcamp.microservicesmeetup.controller.dto.MeetupDTO;
+import com.bootcamp.microservicesmeetup.controller.dto.RegistrationDTO;
 import com.bootcamp.microservicesmeetup.controller.resource.MeetupController;
 import com.bootcamp.microservicesmeetup.exception.BusinessException;
 import com.bootcamp.microservicesmeetup.model.entity.Meetup;
@@ -25,6 +26,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -114,7 +117,87 @@ public class MeetupControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // mais 2 testes de suceeso
-    // mais 2 testes de erro
+    @Test
+    @DisplayName("Should delete the meetup")
+    public void deleteMeetup() throws Exception{
 
+        BDDMockito.given(meetupService
+                        .getById(anyInt()))
+                .willReturn(Optional.of(Meetup.builder().id(11).build()));
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete(MEETUP_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @DisplayName("Should get meetup information")
+    public void getMeetupInformationTest() throws Exception {
+
+        Integer id = 101;
+
+        Meetup meetup = Meetup.builder()
+                .id(id)
+                .event(createNewMeetup().getEvent())
+                .registrationAttribute(createNewMeetup().getRegistrationAttribute())
+                .build();
+
+        BDDMockito.given(meetupService.getById(id)).willReturn(Optional.of(meetup));
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(MEETUP_API.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(101))
+                .andExpect(jsonPath("event").value(createNewMeetup().getEvent()))
+                .andExpect(jsonPath("registrationAttribute").value(createNewMeetup().getRegistrationAttribute()));
+    }
+
+    @Test
+    @DisplayName("Should return 404 when try to update an meetup no existent")
+    public void updateNoExistentMeetupTest() throws Exception {
+
+        String json = new ObjectMapper().writeValueAsString(createNewMeetup());
+        BDDMockito.given(meetupService.getById(anyInt()))
+                .willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .put(MEETUP_API.concat("/" + 1))
+                .contentType(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND when the meetup doesn't exists")
+    public void meetupNotFoundTest() throws Exception {
+
+        BDDMockito.given(meetupService.getById(anyInt())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(MEETUP_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isNotFound());
+    }
+
+    private Registration createNewRegistration() {
+        return Registration.builder().id(11).name("Ana Dev").registration("124").build();
+    }
+
+    private MeetupDTO createNewMeetup() {
+        return MeetupDTO.builder().id(11)
+                .event("Womakerscode Data").registrationAttribute("123").build();
+    }
 }
