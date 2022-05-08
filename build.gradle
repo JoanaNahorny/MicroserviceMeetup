@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.6.7'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id "com.microsoft.azure.azurewebapp" version "1.2.0"
 	id 'java'
 }
 
@@ -45,4 +46,21 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+azurewebapp {
+	subscription = '544fdc98-3365-491b-b619-af9234cc873e'
+	resourceGroup = 'bootcampRestApiMeetup_RG'
+	appName = 'apirest-bootcamp-meetup'
+	region = 'Brazil South'
+	pricingTier = 'P1v2'
+	runtime {
+		os = 'Windows'
+		webContainer = 'Java SE'
+		javaVersion = 'Java 11'
+	}
+	appSettings {}
+	auth {
+		type = 'azure_cli'
+	}
 }
